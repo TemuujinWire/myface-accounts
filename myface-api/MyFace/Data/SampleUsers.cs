@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using MyFace.Models.Database;
 
 namespace MyFace.Data
@@ -127,6 +129,13 @@ namespace MyFace.Data
                 rngCsp.GetNonZeroBytes(salt);
             }
             
+            string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+                password: "ewa123",
+                salt: salt,
+                prf: KeyDerivationPrf.HMACSHA256,
+                iterationCount: 100000,
+                numBytesRequested: 256 / 8));
+            
             return new User
             {
                 FirstName = Data[index][0],
@@ -135,7 +144,7 @@ namespace MyFace.Data
                 Email = Data[index][3],
                 ProfileImageUrl = ImageGenerator.GetProfileImage(Data[index][2]),
                 CoverImageUrl = ImageGenerator.GetCoverImage(index),
-                HashedPassword = "ewa123",
+                HashedPassword = hashed,
                 Salt = salt,
             };
         }
