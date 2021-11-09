@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MyFace.Models.Request;
 using MyFace.Models.Response;
 using MyFace.Repositories;
@@ -17,6 +18,7 @@ namespace MyFace.Controllers
         }
     
         [HttpGet("")]
+        [Authorize]
         public ActionResult<ListResponse<InteractionResponse>> Search([FromQuery] SearchRequest search)
         {
             var interactions = _interactions.Search(search);
@@ -25,6 +27,7 @@ namespace MyFace.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public ActionResult<InteractionResponse> GetById([FromRoute] int id)
         {
             var interaction = _interactions.GetById(id);
@@ -32,6 +35,7 @@ namespace MyFace.Controllers
         }
 
         [HttpPost("create")]
+        [Authorize]
         public IActionResult Create([FromBody] CreateInteractionRequest newUser)
         {
             if (!ModelState.IsValid)
@@ -47,6 +51,7 @@ namespace MyFace.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public IActionResult Delete([FromRoute] int id)
         {
             _interactions.Delete(id);

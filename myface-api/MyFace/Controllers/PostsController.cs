@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MyFace.Models.Request;
 using MyFace.Models.Response;
 using MyFace.Repositories;
@@ -17,6 +18,7 @@ namespace MyFace.Controllers
         }
         
         [HttpGet("")]
+        [Authorize]
         public ActionResult<PostListResponse> Search([FromQuery] PostSearchRequest searchRequest)
         {
             var posts = _posts.Search(searchRequest);
@@ -25,6 +27,7 @@ namespace MyFace.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public ActionResult<PostResponse> GetById([FromRoute] int id)
         {
             var post = _posts.GetById(id);
@@ -32,6 +35,7 @@ namespace MyFace.Controllers
         }
 
         [HttpPost("create")]
+        [Authorize]
         public IActionResult Create([FromBody] CreatePostRequest newPost)
         {
             if (!ModelState.IsValid)
@@ -47,6 +51,7 @@ namespace MyFace.Controllers
         }
 
         [HttpPatch("{id}/update")]
+        [Authorize]
         public ActionResult<PostResponse> Update([FromRoute] int id, [FromBody] UpdatePostRequest update)
         {
             if (!ModelState.IsValid)
@@ -59,6 +64,7 @@ namespace MyFace.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public IActionResult Delete([FromRoute] int id)
         {
             _posts.Delete(id);

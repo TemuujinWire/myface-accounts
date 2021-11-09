@@ -31,6 +31,7 @@ namespace MyFace.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public ActionResult<UserResponse> GetById([FromRoute] int id)
         {
             var user = _users.GetById(id);
@@ -38,6 +39,7 @@ namespace MyFace.Controllers
         }
 
         [HttpPost("create")]
+        [Authorize]
         public IActionResult Create([FromBody] CreateUserRequest newUser)
         {
             if (!ModelState.IsValid)
@@ -53,6 +55,7 @@ namespace MyFace.Controllers
         }
 
         [HttpPatch("{id}/update")]
+        [Authorize]
         public ActionResult<UserResponse> Update([FromRoute] int id, [FromBody] UpdateUserRequest update)
         {
             if (!ModelState.IsValid)
@@ -65,6 +68,7 @@ namespace MyFace.Controllers
         }
         
         [HttpDelete("{id}")]
+        [Authorize]
         public IActionResult Delete([FromRoute] int id)
         {
             _users.Delete(id);
