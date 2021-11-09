@@ -5,7 +5,7 @@ export const LoginContext = createContext({
     isLoggedIn: false,
     isAdmin: false,
     token: "",
-    logIn: (username: string, password: string) => false,
+    logIn: (username: string, password: string) => {},
     logOut: () => {},
 });
 
@@ -23,11 +23,9 @@ export function LoginManager(props: LoginManagerProps): JSX.Element {
         login(btoa(username + ':' + password))
         .then(data => {
             setLoggedIn(true);
-            return true;
         })
         .catch(error => {
             logOut();
-            return false;
         })
     }
     
@@ -38,9 +36,9 @@ export function LoginManager(props: LoginManagerProps): JSX.Element {
     const context = {
         isLoggedIn: loggedIn,
         isAdmin: loggedIn,
+        token: token,
         logIn: logIn,
         logOut: logOut,
-        token: token,
     };
     
     return (

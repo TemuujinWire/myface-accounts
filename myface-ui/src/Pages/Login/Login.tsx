@@ -2,6 +2,7 @@
 import {Page} from "../Page/Page";
 import {LoginContext} from "../../Components/LoginManager/LoginManager";
 import "./Login.scss";
+import { login } from '../../Api/apiClient';
 
 export function Login(): JSX.Element {
     const loginContext = useContext(LoginContext);
@@ -11,12 +12,15 @@ export function Login(): JSX.Element {
     
     function tryLogin(event: FormEvent) {
         event.preventDefault();
-        if (!loginContext.logIn(username, password)) {
+        loginContext.logIn(username, password)
+
+        if (!loginContext.isLoggedIn) {
+            const error = document.getElementById("ewwor");
+            if (error) {
+                error.classList.remove("hide");
+            }
             setUsername("");
             setPassword("");
-
-            const error = document.getElementById("ewwor");
-            error.classList.remove("hide");
         }
     }
     
