@@ -1,9 +1,11 @@
 ﻿import React, {createContext, ReactNode, useState} from "react";
+import { login } from "../../Api/apiClient";
 
 export const LoginContext = createContext({
     isLoggedIn: false,
     isAdmin: false,
-    logIn: () => {},
+    token: "",
+    logIn: (username: string, password: string) => false,
     logOut: () => {},
 });
 
@@ -12,10 +14,21 @@ interface LoginManagerProps {
 }
 
 export function LoginManager(props: LoginManagerProps): JSX.Element {
-    const [loggedIn, setLoggedIn] = useState(true);
+    const [loggedIn, setLoggedIn] = useState(false);
+    const [token, setToken] = useState("");
     
-    function logIn() {
-        setLoggedIn(true);
+    function logIn(username: string, password: string) {
+        setToken(btoa(username + ':' + password))
+
+        login(btoa(username + ':' + password))
+        .then(data => {
+            setLoggedIn(true);
+            return true;
+        })
+        .catch(error => {
+            logOut();
+            return false;
+        })
     }
     
     function logOut() {
@@ -27,6 +40,7 @@ export function LoginManager(props: LoginManagerProps): JSX.Element {
         isAdmin: loggedIn,
         logIn: logIn,
         logOut: logOut,
+        token: token,
     };
     
     return (
