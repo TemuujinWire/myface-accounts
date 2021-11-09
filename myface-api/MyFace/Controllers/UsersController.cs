@@ -2,6 +2,7 @@
 using System.Text;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Mvc;
+using MyFace.Helpers;
 using MyFace.Models.Request;
 using MyFace.Models.Response;
 using MyFace.Repositories;
@@ -22,6 +23,7 @@ namespace MyFace.Controllers
         [HttpGet("")]
         public ActionResult<UserListResponse> Search([FromQuery] UserSearchRequest searchRequest)
         {
+            
             string authorizationString = Request.Headers["Authorization"];
             byte[] decodedData = Convert.FromBase64String(authorizationString.Substring(5));
             

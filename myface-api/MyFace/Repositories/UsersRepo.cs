@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using MyFace.Models.Database;
 using MyFace.Models.Request;
@@ -18,8 +19,9 @@ namespace MyFace.Repositories
         User Create(CreateUserRequest newUser);
         User Update(int id, UpdateUserRequest update);
         void Delete(int id);
+        Task<User> Authenticate(string username, string password);
     }
-    
+
     public class UsersRepo : IUsersRepo
     {
         private readonly MyFaceDbContext _context;
@@ -28,11 +30,11 @@ namespace MyFace.Repositories
         {
             _context = context;
         }
-        
+
         public IEnumerable<User> Search(UserSearchRequest search)
         {
             return _context.Users
-                .Where(p => search.Search == null || 
+                .Where(p => search.Search == null ||
                             (
                                 p.FirstName.ToLower().Contains(search.Search) ||
                                 p.LastName.ToLower().Contains(search.Search) ||
@@ -47,7 +49,7 @@ namespace MyFace.Repositories
         public int Count(UserSearchRequest search)
         {
             return _context.Users
-                .Count(p => search.Search == null || 
+                .Count(p => search.Search == null ||
                             (
                                 p.FirstName.ToLower().Contains(search.Search) ||
                                 p.LastName.ToLower().Contains(search.Search) ||
@@ -70,22 +72,21 @@ namespace MyFace.Repositories
 
         public User Create(CreateUserRequest newUser)
         {
-            
             string timestamp = DateTime.Now.ToFileTime().ToString();
             byte[] salt = Encoding.ASCII.GetBytes(timestamp);
-            
+
             using (var rngCsp = new RNGCryptoServiceProvider())
             {
                 rngCsp.GetNonZeroBytes(salt);
             }
-            
+
             string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
                 password: newUser.Password,
                 salt: salt,
                 prf: KeyDerivationPrf.HMACSHA256,
                 iterationCount: 100000,
                 numBytesRequested: 256 / 8));
-            
+
             var insertResponse = _context.Users.Add(new User
             {
                 FirstName = newUser.FirstName,
@@ -124,6 +125,27 @@ namespace MyFace.Repositories
             var user = GetById(id);
             _context.Users.Remove(user);
             _context.SaveChanges();
+        }
+
+        public async Task<User> Authenticate(string username, string password)
+        {
+            var user = GetByUsername(username);
+
+            string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+                password: password,
+                salt: user.Salt,
+                prf: KeyDerivationPrf.HMACSHA256,
+                iterationCount: 100000,
+                numBytesRequested: 256 / 8));
+
+            if (hashed == user.HashedPassword)
+            {
+                return user;
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }
