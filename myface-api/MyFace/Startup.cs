@@ -67,6 +67,8 @@ namespace MyFace
             app.UseHttpsRedirection();
 
             app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseCors(CORS_POLICY_NAME);
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Mvc;
 using MyFace.Helpers;
@@ -19,29 +20,11 @@ namespace MyFace.Controllers
         {
             _users = users;
         }
-        
+
         [HttpGet("")]
+        [Authorize]
         public ActionResult<UserListResponse> Search([FromQuery] UserSearchRequest searchRequest)
         {
-            
-            string authorizationString = Request.Headers["Authorization"];
-            byte[] decodedData = Convert.FromBase64String(authorizationString.Substring(5));
-            
-            string[] usernamePassword = Encoding.UTF8.GetString(decodedData).Split(':');
-            string decodedUsername = usernamePassword[0];
-            string decodedPassword = usernamePassword[1];
-
-            var user = _users.GetByUsername(decodedUsername);
-            
-            string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
-                password: decodedPassword,
-                salt: user.Salt,
-                prf: KeyDerivationPrf.HMACSHA256,
-                iterationCount: 100000,
-                numBytesRequested: 256 / 8));
-
-            Console.WriteLine(hashed == user.HashedPassword);
-            
             var users = _users.Search(searchRequest);
             var userCount = _users.Count(searchRequest);
             return UserListResponse.Create(searchRequest, users, userCount);
