@@ -13,7 +13,6 @@ namespace MyFace.Controllers
         [Authorize]
         public ActionResult Index()
         {
-            Console.WriteLine("came here");
             return Ok();  // You may come in :)
         }
     }

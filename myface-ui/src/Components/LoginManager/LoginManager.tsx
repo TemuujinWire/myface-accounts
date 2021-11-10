@@ -34,10 +34,8 @@ export function LoginManager(props: LoginManagerProps): JSX.Element {
 
     function updateLoggedIn(value:boolean) {
         setLoggedIn(value)
-        console.log(`i am here: ${value}`)
         if (!value) {
-            console.log("i am now here")
-            document.cookie = "";
+            document.cookie = "token=; expires=" + new Date();
         }
     }
     

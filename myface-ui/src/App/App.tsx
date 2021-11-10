@@ -13,9 +13,6 @@ import {checkCredentials} from "../Api/apiClient";
 
 function Routes(): ReactElement {
     const loginContext = useContext(LoginContext);
-
-    // console.log(document.cook)
-
     checkCredentials(document.cookie.substring(6))
         .then(() => loginContext.updateLoggedIn(true))
         .catch(() => loginContext.updateLoggedIn(false))
