@@ -40,7 +40,6 @@ export interface Post {
 export interface NewPost {
     message: string;
     imageUrl: string;
-    userId: number;
 }
 
 async function makeAuthenticatedGetRequest(route:string) {
@@ -67,35 +66,31 @@ export async function fetchUsers(searchTerm: string, page: number, pageSize: num
 }
 
 export async function fetchUser(userId: string | number): Promise<User> {
-    const response = await fetch(`https://localhost:5001/users/${userId}`);
-    return await response.json();
+    return await makeAuthenticatedGetRequest(`users/${userId}`);
 }
 
 export async function fetchPosts(page: number, pageSize: number): Promise<ListResponse<Post>> {
-    const response = await fetch(`https://localhost:5001/feed?page=${page}&pageSize=${pageSize}`);
-    return await response.json();
+   return await makeAuthenticatedGetRequest(`feed?page=${page}&pageSize=${pageSize}`);
 }
 
 export async function fetchPostsForUser(page: number, pageSize: number, userId: string | number) {
-    const response = await fetch(`https://localhost:5001/feed?page=${page}&pageSize=${pageSize}&postedBy=${userId}`);
-    return await response.json();
+    return await makeAuthenticatedGetRequest(`feed?page=${page}&pageSize=${pageSize}&postedBy=${userId}`);
 }
 
 export async function fetchPostsLikedBy(page: number, pageSize: number, userId: string | number) {
-    const response = await fetch(`https://localhost:5001/feed?page=${page}&pageSize=${pageSize}&likedBy=${userId}`);
-    return await response.json();
+    return await makeAuthenticatedGetRequest(`feed?page=${page}&pageSize=${pageSize}&likedBy=${userId}`);
 }
 
 export async function fetchPostsDislikedBy(page: number, pageSize: number, userId: string | number) {
-    const response = await fetch(`https://localhost:5001/feed?page=${page}&pageSize=${pageSize}&dislikedBy=${userId}`);
-    return await response.json();
+    return await makeAuthenticatedGetRequest(`feed?page=${page}&pageSize=${pageSize}&dislikedBy=${userId}`);
 }
 
 export async function createPost(newPost: NewPost) {
     const response = await fetch(`https://localhost:5001/posts/create`, {
         method: "POST",
         headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "Authorization": "Basic " + document.cookie.substring(6),
         },
         body: JSON.stringify(newPost),
     });

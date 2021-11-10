@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using Microsoft.AspNetCore.Http;
 using MyFace.Models.Database;
 using MyFace.Models.Request;
 
@@ -19,7 +21,8 @@ namespace MyFace.Repositories
         User Create(CreateUserRequest newUser);
         User Update(int id, UpdateUserRequest update);
         void Delete(int id);
-        Task<User> Authenticate(string username, string password);
+        User Authenticate(string username, string password);
+        int GetUserIdFromRequest(HttpRequest request);
     }
 
     public class UsersRepo : IUsersRepo
@@ -127,7 +130,7 @@ namespace MyFace.Repositories
             _context.SaveChanges();
         }
 
-        public async Task<User> Authenticate(string username, string password)
+        public User Authenticate(string username, string password)
         {
             var user = GetByUsername(username);
 
@@ -146,6 +149,16 @@ namespace MyFace.Repositories
             {
                 return null;
             }
+        }
+
+        public int GetUserIdFromRequest(HttpRequest request)
+        {
+            var authHeader = AuthenticationHeaderValue.Parse(request.Headers["Authorization"]);
+            var credentialBytes = Convert.FromBase64String(authHeader.Parameter);
+            var credentials = Encoding.UTF8.GetString(credentialBytes).Split(new[] {':'}, 2);
+            var username = credentials[0];
+            var user = GetByUsername(username);
+            return user.Id;
         }
     }
 }
