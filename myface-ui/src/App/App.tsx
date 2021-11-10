@@ -8,10 +8,17 @@ import {Login} from "../Pages/Login/Login";
 import {LoginContext, LoginManager} from "../Components/LoginManager/LoginManager";
 import {Profile} from "../Pages/Profile/Profile";
 import {CreatePost} from "../Pages/CreatePost/CreatePost";
+import {checkCredentials} from "../Api/apiClient";
 
 
 function Routes(): ReactElement {
     const loginContext = useContext(LoginContext);
+
+    // console.log(document.cook)
+
+    checkCredentials(document.cookie.substring(6))
+        .then(() => loginContext.updateLoggedIn(true))
+        .catch(() => loginContext.updateLoggedIn(false))
     
     if (!loginContext.isLoggedIn) {
         return <Login/>

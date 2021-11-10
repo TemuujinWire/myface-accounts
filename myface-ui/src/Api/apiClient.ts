@@ -1,4 +1,7 @@
-﻿export interface ListResponse<T> {
+﻿import {useContext} from "react";
+import {LoginContext} from "../Components/LoginManager/LoginManager";
+
+export interface ListResponse<T> {
     items: T[];
     totalNumberOfItems: number;
     page: number;
@@ -40,24 +43,27 @@ export interface NewPost {
     userId: number;
 }
 
-export async function login(token:string) {
-    const response =  await fetch(`https://localhost:5001/login`, {
+async function makeAuthenticatedGetRequest(route:string) {
+    const response =  await fetch(`https://localhost:5001/${route}`, {
+        method: "GET",
+        headers: {
+            "Authorization": "Basic " + document.cookie.substring(6),
+        }
+    });
+    return await response.json();
+}
+
+export async function checkCredentials(token:string) {
+    await fetch(`https://localhost:5001/login`, {
         method: "GET",
         headers: {
             "Authorization": "Basic " + token,
         }
     });
-    return response.ok;
 }
 
-export async function fetchUsers(searchTerm: string, page: number, pageSize: number, token: string): Promise<ListResponse<User>> {
-    const response = await fetch(`https://localhost:5001/users?search=${searchTerm}&page=${page}&pageSize=${pageSize}`, {
-        method: "GET",
-        headers: {
-            "Authorization": "Basic " + token,
-        },
-    });
-    return await response.json();
+export async function fetchUsers(searchTerm: string, page: number, pageSize: number): Promise<ListResponse<User>> {
+    return await makeAuthenticatedGetRequest(`users?search=${searchTerm}&page=${page}&pageSize=${pageSize}`);
 }
 
 export async function fetchUser(userId: string | number): Promise<User> {

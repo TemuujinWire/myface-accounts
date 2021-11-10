@@ -1,12 +1,12 @@
 ﻿import React, {createContext, ReactNode, useState} from "react";
-import { login } from "../../Api/apiClient";
+import { checkCredentials } from "../../Api/apiClient";
 
 export const LoginContext = createContext({
     isLoggedIn: false,
     isAdmin: false,
-    token: "",
     logIn: (username: string, password: string) => {},
     logOut: () => {},
+    updateLoggedIn: (value:boolean) => {},
 });
 
 interface LoginManagerProps {
@@ -15,30 +15,38 @@ interface LoginManagerProps {
 
 export function LoginManager(props: LoginManagerProps): JSX.Element {
     const [loggedIn, setLoggedIn] = useState(false);
-    const [token, setToken] = useState("");
-    
-    function logIn(username: string, password: string) {
-        setToken(btoa(username + ':' + password))
 
-        login(btoa(username + ':' + password))
-        .then(data => {
+    function logIn(username: string, password: string) {
+        const token = btoa(username + ':' + password)
+        checkCredentials(token)
+        .then(() => {
+            document.cookie = `token=${token}`;
             setLoggedIn(true);
         })
-        .catch(error => {
+        .catch(() => {
             logOut();
         })
     }
     
     function logOut() {
-        setLoggedIn(false);
+        updateLoggedIn(false);
+    }
+
+    function updateLoggedIn(value:boolean) {
+        setLoggedIn(value)
+        console.log(`i am here: ${value}`)
+        if (!value) {
+            console.log("i am now here")
+            document.cookie = "";
+        }
     }
     
     const context = {
         isLoggedIn: loggedIn,
         isAdmin: loggedIn,
-        token: token,
         logIn: logIn,
         logOut: logOut,
+        updateLoggedIn: updateLoggedIn,
     };
     
     return (

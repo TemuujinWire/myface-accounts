@@ -2,7 +2,7 @@
 import {Page} from "../Page/Page";
 import {LoginContext} from "../../Components/LoginManager/LoginManager";
 import "./Login.scss";
-import { login } from '../../Api/apiClient';
+import { checkCredentials } from '../../Api/apiClient';
 
 export function Login(): JSX.Element {
     const loginContext = useContext(LoginContext);
