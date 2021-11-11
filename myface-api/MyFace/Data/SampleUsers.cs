@@ -11,7 +11,7 @@ namespace MyFace.Data
     public static class SampleUsers
     {
         public const int NumberOfUsers = 100;
-
+        
         private static readonly IList<IList<string>> Data = new List<IList<string>>
         {
             new List<string> { "Kania", "Placido", "kplacido0", "kplacido0@qq.com" },
@@ -145,7 +145,7 @@ namespace MyFace.Data
                 ProfileImageUrl = ImageGenerator.GetProfileImage(Data[index][2]),
                 CoverImageUrl = ImageGenerator.GetCoverImage(index),
                 HashedPassword = hashed,
-                Salt = salt,
+                Salt = salt
             };
         }
     }

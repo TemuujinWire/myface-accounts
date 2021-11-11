@@ -11,10 +11,12 @@ namespace MyFace.Controllers
     public class PostsController : ControllerBase
     {    
         private readonly IPostsRepo _posts;
+        private readonly IUsersRepo _users;
 
-        public PostsController(IPostsRepo posts)
+        public PostsController(IPostsRepo posts, IUsersRepo users)
         {
             _posts = posts;
+            _users = users;
         }
         
         [HttpGet("")]
@@ -42,7 +44,8 @@ namespace MyFace.Controllers
             {
                 return BadRequest(ModelState);
             }
-            
+
+            newPost.UserId = _users.GetUserIdFromRequest(Request);
             var post = _posts.Create(newPost);
 
             var url = Url.Action("GetById", new { id = post.Id });

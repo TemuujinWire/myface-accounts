@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MyFace.Models.Database;
@@ -38,10 +39,11 @@ namespace MyFace.Helpers
                 var credentials = Encoding.UTF8.GetString(credentialBytes).Split(new[] {':'}, 2);
                 var username = credentials[0];
                 var password = credentials[1];
-                user = await _userService.Authenticate(username, password);
+                user = _userService.Authenticate(username, password);
             }
-            catch
+            catch (Exception error)
             {
+                Console.WriteLine(error);
                 return AuthenticateResult.Fail("Error Occured.Authorization failed.");
             }
 
