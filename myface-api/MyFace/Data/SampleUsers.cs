@@ -145,7 +145,8 @@ namespace MyFace.Data
                 ProfileImageUrl = ImageGenerator.GetProfileImage(Data[index][2]),
                 CoverImageUrl = ImageGenerator.GetCoverImage(index),
                 HashedPassword = hashed,
-                Salt = salt
+                Salt = salt,
+                Role = Data[index][2] == "efredy1u" ? Role.ADMIN : Role.MEMBER,
             };
         }
     }

@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MyFace.Models.Database;
 using MyFace.Models.Request;
 using MyFace.Models.Response;
 using MyFace.Repositories;
@@ -45,7 +47,7 @@ namespace MyFace.Controllers
                 return BadRequest(ModelState);
             }
 
-            newPost.UserId = _users.GetUserIdFromRequest(Request);
+            newPost.UserId = _users.GetUserFromRequest(Request).Id;
             var post = _posts.Create(newPost);
 
             var url = Url.Action("GetById", new { id = post.Id });
@@ -70,8 +72,19 @@ namespace MyFace.Controllers
         [Authorize]
         public IActionResult Delete([FromRoute] int id)
         {
-            _posts.Delete(id);
-            return Ok();
+            var user = _users.GetUserFromRequest(Request);
+            var postToBeDeleted = _posts.GetById(id);
+
+            Console.WriteLine(postToBeDeleted.UserId + 1);
+            Console.WriteLine(user.Id + 1);
+
+            if (user.Role == Role.ADMIN || user.Id == postToBeDeleted.UserId)
+            {
+                _posts.Delete(id);
+                return Ok();
+            }
+            
+            return Forbid();
         }
     }
 }

@@ -3,6 +3,8 @@ using MyFace.Data;
 
 namespace MyFace.Models.Database
 {
+    public enum Role {ADMIN, MEMBER}
+    
     public class User
     {
         public int Id { get; set; }
@@ -18,5 +20,6 @@ namespace MyFace.Models.Database
         
         public string HashedPassword { get; set; }
         public byte[] Salt { get; set; }
+        public Role Role { get; set; }
     }
 }

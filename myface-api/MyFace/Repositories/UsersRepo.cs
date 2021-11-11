@@ -22,7 +22,7 @@ namespace MyFace.Repositories
         User Update(int id, UpdateUserRequest update);
         void Delete(int id);
         User Authenticate(string username, string password);
-        int GetUserIdFromRequest(HttpRequest request);
+        User GetUserFromRequest(HttpRequest request);
     }
 
     public class UsersRepo : IUsersRepo
@@ -151,14 +151,13 @@ namespace MyFace.Repositories
             }
         }
 
-        public int GetUserIdFromRequest(HttpRequest request)
+        public User GetUserFromRequest(HttpRequest request)
         {
             var authHeader = AuthenticationHeaderValue.Parse(request.Headers["Authorization"]);
             var credentialBytes = Convert.FromBase64String(authHeader.Parameter);
             var credentials = Encoding.UTF8.GetString(credentialBytes).Split(new[] {':'}, 2);
             var username = credentials[0];
-            var user = GetByUsername(username);
-            return user.Id;
+            return GetByUsername(username);
         }
     }
 }
